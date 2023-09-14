@@ -24,14 +24,18 @@ public class PlayerSearchApp extends JFrame {
         setSize(600, 300);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
+        // 设置主面板的背景颜色为深蓝色
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new GridLayout(1, 2));
+        mainPanel.setBackground(new Color(32, 33, 35)); // #202123
 
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BorderLayout());
+        leftPanel.setOpaque(false);
 
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new GridLayout(2, 1));
+        rightPanel.setOpaque(false);
 
         idTextField = new JTextField();
         JButton searchButton = new JButton("查询");
@@ -39,6 +43,15 @@ public class PlayerSearchApp extends JFrame {
         resultTextArea.setEditable(false);
         nameLabel = new JLabel("Name: ");
         uuidLabel = new JLabel("UUID: ");
+
+        // 设置文本框背景颜色为黑色
+        idTextField.setBackground(Color.BLACK);
+        idTextField.setForeground(Color.WHITE);
+
+        // 设置按钮的背景颜色为深蓝色
+        searchButton.setBackground(new Color(32, 33, 35));
+        searchButton.setForeground(Color.WHITE);
+        searchButton.setFocusPainted(false);
 
         searchButton.addActionListener(new ActionListener() {
             @Override
@@ -63,6 +76,9 @@ public class PlayerSearchApp extends JFrame {
         mainPanel.add(leftPanel);
         mainPanel.add(rightPanel);
 
+        // 设置主窗口的背景颜色为深蓝色
+        getContentPane().setBackground(new Color(68, 70, 83)); // #444653
+
         add(mainPanel, BorderLayout.CENTER);
         add(new JScrollPane(resultTextArea), BorderLayout.SOUTH);
     }
@@ -74,7 +90,7 @@ public class PlayerSearchApp extends JFrame {
             connection.setRequestMethod("GET");
             int responseCode = connection.getResponseCode();
 
-            if (responseCode >= 200 && responseCode < 300) { // 2开头表示成功
+            if (responseCode >= 200 && responseCode < 300) {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 String line;
                 StringBuilder response = new StringBuilder();
@@ -85,16 +101,15 @@ public class PlayerSearchApp extends JFrame {
 
                 reader.close();
 
-                // 使用 org.json 解析 JSON 数据
                 JSONObject json = new JSONObject(response.toString());
                 String name = json.getString("name");
                 String id = json.getString("id");
 
                 state = true;
                 resultName = name;
-                return "获取成功\n玩家名字：" + name + "\nUUID：" + id; // 注意这里的标签更改
+                return "获取成功\n玩家名字：" + name + "\nUUID：" + id;
 
-            } else if (responseCode >= 400 && responseCode < 500) { // 4开头表示失败
+            } else if (responseCode >= 400 && responseCode < 500) {
                 state = false;
                 return "获取失败，状态码：" + responseCode;
             } else {
@@ -108,16 +123,18 @@ public class PlayerSearchApp extends JFrame {
     }
 
     private void updateLabels(String playerInfo) {
-        if (playerInfo.contains("玩家名字：") && playerInfo.contains("UUID：")) { // 更新匹配条件
+        if (playerInfo.contains("玩家名字：") && playerInfo.contains("UUID：")) {
             int nameStart = playerInfo.indexOf("玩家名字：") + 6;
             int nameEnd = playerInfo.indexOf("\n", nameStart);
             String name = playerInfo.substring(nameStart, nameEnd);
 
-            int uuidStart = playerInfo.indexOf("UUID：") + 5; // 更新UUID标签
+            int uuidStart = playerInfo.indexOf("UUID：") + 5;
             String uuid = playerInfo.substring(uuidStart);
 
-            nameLabel.setFont(new Font("Arial", Font.BOLD, 14)); // 设置字体为Arial，粗体，字号14
-            uuidLabel.setFont(new Font("Arial", Font.BOLD, 14)); // 设置字体为Arial，粗体，字号14
+            nameLabel.setFont(new Font("Arial", Font.BOLD, 14));
+            nameLabel.setForeground(Color.WHITE); // 文字颜色设置为白色
+            uuidLabel.setFont(new Font("Arial", Font.BOLD, 14));
+            uuidLabel.setForeground(Color.WHITE); // 文字颜色设置为白色
 
             nameLabel.setText("Name: " + resultName);
             uuidLabel.setText("UUID: " + uuid);
